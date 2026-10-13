@@ -1,0 +1,10 @@
+.env
+secrets/
+data/
+logs/
+__pycache__/
+*.pyc
+.git/
+.venv/
+venv/
+README.md

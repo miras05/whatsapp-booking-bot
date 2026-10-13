@@ -1,0 +1,34 @@
+# Конфигурация деплоя на Fly.io.
+#
+# HTTPS даётся бесплатно самим Fly (https://<app>.fly.dev) — отдельный Caddy
+# и покупка домена не нужны, в отличие от варианта с обычным VPS.
+#
+app = "whatsapp-booking-bot"
+primary_region = "sin"  # Сингапур — доступный по мощностям, разумно близко к региону
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"   # бот не должен засыпать — вебхук должен отвечать мгновенно
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
+
+[mounts]
+  # База сессий/очереди должна переживать перезапуски и деплои.
+  source = "booking_data"
+  destination = "/app/data"
+
+[checks]
+  [checks.health]
+    type = "http"
+    port = 8080
+    path = "/health"
+    interval = "30s"
+    timeout = "10s"
+    grace_period = "20s"
